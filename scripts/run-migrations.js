@@ -30,15 +30,12 @@ const migrationFiles = [
 ];
 
 async function runMigrations() {
-	console.log('Connecting to database...');
 	let pool;
 	try {
 		pool = await sql.connect(dbConfig);
-		console.log('Connected successfully!');
 
 		for (const fileRelPath of migrationFiles) {
 			const filePath = path.resolve(__dirname, fileRelPath);
-			console.log(`Reading SQL file: ${path.basename(filePath)}...`);
 			const sqlContent = fs.readFileSync(filePath, 'utf8');
 
 			// Split by GO statements
@@ -51,20 +48,14 @@ async function runMigrations() {
 				try {
 					await pool.request().query(batch);
 				} catch (err) {
-					console.error(`Error executing batch in ${path.basename(filePath)}:`, err.message);
-					console.error('Batch SQL was:', batch);
 					throw err;
 				}
 			}
-			console.log(`Successfully applied ${path.basename(filePath)}`);
 		}
-
-		console.log('Inserting sample data if tables are empty...');
 		
 		// Check if rejected_video_requests table is empty, and insert some mock data if it is
 		const countResult = await pool.request().query('SELECT COUNT(*) as count FROM rejected_video_requests');
 		if (countResult.recordset[0].count === 0) {
-			console.log('Inserting sample rejected video requests...');
 			await pool.request().query(`
 				INSERT INTO rejected_video_requests (jobCardNo, customerName, carDetails, services, videographerName, rejectedDate, rejectionReason, isResolved) VALUES
 				('JC-2024-006', 'Sana Ali', 'Lamborghini Urus 2023 · KA03KL2345', 'Wrapping,PPF', 'Aisha K.', '2024-12-09', 'Video footage was blurry and out of focus for most of the walkaround shots.', 0),
@@ -75,7 +66,6 @@ async function runMigrations() {
 
 		const pendingCount = await pool.request().query('SELECT COUNT(*) as count FROM video_requests_pending');
 		if (pendingCount.recordset[0].count === 0) {
-			console.log('Inserting sample pending video requests...');
 			await pool.request().query(`
 				INSERT INTO video_requests_pending (jobCardNo, customerName, videoType, status, assignedBy, date, isActive) VALUES
 				('JC-0745', 'Dhairya Shah DSA', 'Reel', 'Pending', 'Admin User', '2026-07-14', 1),
@@ -84,9 +74,7 @@ async function runMigrations() {
 			`);
 		}
 
-		console.log('All migrations completed successfully!');
 	} catch (err) {
-		console.error('Migration failed:', err);
 	} finally {
 		if (pool) {
 			await sql.close();

@@ -22,15 +22,12 @@ const dbConfig = {
 async function listSPs() {
 	try {
 		const pool = await sql.connect(dbConfig);
-		console.log('Successfully connected to the database!');
 		const result = await pool.request().query(`
 			SELECT name, create_date, modify_date 
 			FROM sys.procedures 
 			ORDER BY name;
 		`);
-		console.log('\nExisting Stored Procedures in database:');
 		result.recordset.forEach(row => {
-			console.log(`- ${row.name} (Created: ${row.create_date})`);
 		});
 		await sql.close();
 	} catch (err) {

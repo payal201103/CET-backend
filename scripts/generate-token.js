@@ -23,12 +23,9 @@ async function generateToken() {
 	const lastName = args[4] || 'Doe';
 
 	try {
-		console.log(
-			`Connecting to database at ${dbConfig.server}:${dbConfig.port} (DB: ${dbConfig.database})...`
-		);
+		
 		let pool = await sql.connect(dbConfig);
 
-		console.log(`Checking if user '${userName}' exists in CRM 'users' table...`);
 		const userCheck = await pool
 			.request()
 			.input('userName', sql.VarChar(100), userName)
@@ -36,7 +33,6 @@ async function generateToken() {
 
 		let userId;
 		if (userCheck.recordset.length === 0) {
-			console.log(`Creating user '${userName}' in users table...`);
 			const insertUser = await pool
 				.request()
 				.input('userName', sql.VarChar(100), userName)
@@ -53,30 +49,14 @@ async function generateToken() {
 			userId = userCheck.recordset[0].userID;
 		}
 
-		console.log(`User ID is: ${userId}`);
 
 		const token = jwt.sign({ userId }, config.jwt.secret, { expiresIn: config.jwt.expiresIn });
 
-		console.log('Registering active session in session_master...');
 		await pool.request().input('userId', sql.Int, userId).input('token', sql.VarChar(512), token)
 			.query(`
 				INSERT INTO session_master (userId, token, createdAt, updatedAt, ipAddress)
 				VALUES (@userId, @token, GETDATE(), GETDATE(), '127.0.0.1');
 			`);
-
-		console.log(
-			'\n=========================================================================================='
-		);
-		console.log(
-			`TOKEN GENERATED SUCCESSFULLY FOR USER: ${userName} (Role: ${role}, UserID: ${userId})`
-		);
-		console.log(
-			'=========================================================================================='
-		);
-		console.log(token);
-		console.log(
-			'==========================================================================================\n'
-		);
 
 		await sql.close();
 	} catch (err) {

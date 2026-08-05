@@ -20,19 +20,9 @@ const dbConfig = {
 };
 
 async function test() {
-	console.log('Connecting with config:', {
-		server: dbConfig.server,
-		database: dbConfig.database,
-		user: dbConfig.user,
-		port: dbConfig.port,
-		encrypt: dbConfig.options.encrypt,
-		trustServerCertificate: dbConfig.options.trustServerCertificate
-	});
 	try {
 		const pool = await sql.connect(dbConfig);
-		console.log('Successfully connected to the database!');
 		const result = await pool.request().query('SELECT @@VERSION as version');
-		console.log('SQL Server version:', result.recordset[0].version);
 		await sql.close();
 	} catch (err) {
 		console.error('Database connection failed:', err);

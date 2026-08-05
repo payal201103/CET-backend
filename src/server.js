@@ -44,8 +44,6 @@ const startServer = async () => {
 
 		server.listen(port, () => {
 			logger.info(`Server started successfully on port ${port}`);
-			console.log('\x1b[32m%s\x1b[0m', 'Compiled Successfully!');
-			console.log(`\n Local:\t\t http://localhost:${port}`);
 		});
 	} catch (error) {
 		console.error('Failed to start server:', error);
@@ -54,13 +52,11 @@ const startServer = async () => {
 };
 
 process.on('SIGINT', async () => {
-	console.log('\nShutting down server...');
 	await closeDatabase();
 	process.exit(0);
 });
 
 process.on('SIGTERM', async () => {
-	console.log('\nShutting down server...');
 	await closeDatabase();
 	process.exit(0);
 });

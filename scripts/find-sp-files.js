@@ -31,11 +31,9 @@ function searchDir(dir) {
 
 searchDir(searchRoot);
 
-console.log(`Found ${foundFiles.length} total SQL files.`);
-console.log('SQL files outside standard CET-Backend paths:');
 foundFiles.forEach(f => {
 	const lower = f.toLowerCase();
 	if (!lower.includes('cet-backend\\src\\database\\sp\\') && !lower.includes('cet-backend\\src\\database\\tables\\')) {
-		console.log(f);
+	
 	}
 });
