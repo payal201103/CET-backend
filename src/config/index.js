@@ -52,7 +52,7 @@ const parseEnv = () => {
 	});
 
 	if (error) {
-		console.error('Environment variable validation error:');
+		console.error('Environment variable validation erro:');
 		error.details.forEach((err) => {
 			console.error(`- ${err.path.join('.')}: ${err.message}`);
 		});
