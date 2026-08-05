@@ -1,0 +1,13 @@
+tmp
+dist
+node_modules
+.env
+uploads/
+.vscode/
+deploy.sh
+.autopilot.json
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml

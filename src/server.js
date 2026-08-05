@@ -1,0 +1,68 @@
+import cors from 'cors';
+import express from 'express';
+import http from 'http';
+import helmet from 'helmet';
+import config from './config/index.js';
+import ResponseHandler from './utils/responseHandler.js';
+import logger from './utils/logger.js';
+import { errorHandler } from './utils/errorHandler.js';
+import routes from './routes/v1/index.js';
+import healthRoute from './routes/v1/health.route.js';
+import { initializeDatabase, closeDatabase } from './database/index.js';
+import {
+	generalRateLimiter,
+	apiRateLimiter,
+	healthRateLimiter,
+	developmentRateLimiter,
+} from './middlewares/rateLimit.middlewares.js';
+
+const app = express();
+const port = config.server.port;
+const server = http.createServer(app);
+
+app.use(helmet());
+app.use(cors({ origin: config.server.corsOrigin }));
+app.use(express.json({ limit: '5mb' }));
+app.use(express.urlencoded({ extended: false }));
+app.use(logger.logRequest.bind(logger));
+
+app.use((req, res, next) => {
+	res.handler = new ResponseHandler(req, res);
+	next();
+});
+
+app.use(config.server.nodeEnv === 'development' ? developmentRateLimiter : generalRateLimiter);
+
+app.use('/api/ping', healthRateLimiter, healthRoute);
+app.use('/api/v1', apiRateLimiter, routes);
+
+app.use(errorHandler);
+
+const startServer = async () => {
+	try {
+		await initializeDatabase();
+
+		server.listen(port, () => {
+			logger.info(`Server started successfully on port ${port}`);
+			console.log('\x1b[32m%s\x1b[0m', 'Compiled Successfully!');
+			console.log(`\n Local:\t\t http://localhost:${port}`);
+		});
+	} catch (error) {
+		console.error('Failed to start server:', error);
+		process.exit(1);
+	}
+};
+
+process.on('SIGINT', async () => {
+	console.log('\nShutting down server...');
+	await closeDatabase();
+	process.exit(0);
+});
+
+process.on('SIGTERM', async () => {
+	console.log('\nShutting down server...');
+	await closeDatabase();
+	process.exit(0);
+});
+
+startServer();
