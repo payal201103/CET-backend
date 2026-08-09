@@ -10,13 +10,13 @@ const jobCardController = new JobCardController();
 router.use(validateToken);
 
 router.get('/', jobCardController.getAllJobCards);
+router.get('/:id/pdf', jobCardController.getJobCardPdf);
 router.post('/', validateSchema(jobCardValidation.createJobCard), jobCardController.createJobCard);
 router.put(
 	'/:id',
 	validateSchema(jobCardValidation.updateJobCard),
 	jobCardController.updateJobCard
 );
-router.delete('/:id', jobCardController.deleteJobCard);
 router.patch('/:id/complete', jobCardController.completeJobCard);
 
 export default router;

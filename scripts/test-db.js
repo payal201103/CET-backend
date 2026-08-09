@@ -22,7 +22,8 @@ const dbConfig = {
 async function test() {
 	try {
 		const pool = await sql.connect(dbConfig);
-		const result = await pool.request().query('SELECT @@VERSION as version');
+		const result = await pool.request().query("SELECT COLUMN_NAME, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'job_cards'");
+		console.log(result.recordset);
 		await sql.close();
 	} catch (err) {
 		console.error('Database connection failed:', err);

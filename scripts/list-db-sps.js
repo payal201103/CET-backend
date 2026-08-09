@@ -28,6 +28,7 @@ async function listSPs() {
 			ORDER BY name;
 		`);
 		result.recordset.forEach(row => {
+			console.log(row.name);
 		});
 		await sql.close();
 	} catch (err) {
