@@ -71,6 +71,16 @@ class VideoController {
 			return res.handler.serverError({}, error.message || 'Error updating pending video request');
 		}
 	}
+
+	async getVideoRoleStats(req, res) {
+		try {
+			const stats = await videoService.getVideoRoleStats();
+			return res.handler.success(stats, 'Video role statistics fetched successfully');
+		} catch (error) {
+			logger.error('Error in getVideoRoleStats controller', { error });
+			return res.handler.serverError({}, error.message || 'Error fetching video role statistics');
+		}
+	}
 }
 
 export default VideoController;

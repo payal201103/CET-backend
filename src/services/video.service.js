@@ -75,6 +75,10 @@ class VideoService {
 			isActive: result.isActive === 1 || result.isActive === true,
 		};
 	}
+
+	async getVideoRoleStats() {
+		return await videoModel.getVideoRoleStats();
+	}
 }
 
 export default VideoService;

@@ -133,9 +133,7 @@ class JobCardController {
 				} catch (e) {
 					return dateStr;
 				}
-			};
-
-			const htmlContent = `
+			};			const htmlContent = `
 <!DOCTYPE html>
 <html>
 <head>
@@ -300,7 +298,7 @@ class JobCardController {
 <body>
 	<div class="container">
 		<div class="header-logo">
-			\${logoBase64 ? \`<img src="\${logoBase64}" alt="Exotic Car Logo">\` : ''}
+			${logoBase64 ? `<img src="${logoBase64}" alt="Exotic Car Logo">` : ''}
 		</div>
 		<div class="subtitle">We Detail With Passion</div>
 		<h2 class="title-studio">EXOTIC CAR DETAILING STUDIO</h2>
@@ -315,42 +313,42 @@ class JobCardController {
 		
 		<div class="jobcard-number-box">
 			<div class="jobcard-number-inner">
-				Job Card No: \${jobCard.jobCardNo}
+				Job Card No: ${jobCard.jobCardNo}
 			</div>
 		</div>
 
 		<table class="details-table">
 			<tr>
 				<td class="label">Customer Name:</td>
-				<td class="value">\${jobCard.customer}</td>
+				<td class="value">${jobCard.customer}</td>
 			</tr>
 			<tr>
 				<td class="label">Mobile No:</td>
-				<td class="value">\${jobCard.phone}</td>
+				<td class="value">${jobCard.phone}</td>
 			</tr>
 			<tr>
 				<td class="label">Car Brand:</td>
-				<td class="value">\${jobCard.carBrand || '—'}</td>
+				<td class="value">${jobCard.carBrand || '—'}</td>
 			</tr>
 			<tr>
 				<td class="label">Car Model:</td>
-				<td class="value">\${jobCard.carModel || '—'}</td>
+				<td class="value">${jobCard.carModel || '—'}</td>
 			</tr>
 			<tr>
 				<td class="label">Car Color:</td>
-				<td class="value">\${jobCard.carColor || '—'}</td>
+				<td class="value">${jobCard.carColor || '—'}</td>
 			</tr>
 			<tr>
 				<td class="label">Car Number:</td>
-				<td class="value">\${jobCard.carNumber || '—'}</td>
+				<td class="value">${jobCard.carNumber || '—'}</td>
 			</tr>
 			<tr>
 				<td class="label">Booking Date:</td>
-				<td class="value">\${formatDate(jobCard.bookingDate, true)}</td>
+				<td class="value">${formatDate(jobCard.bookingDate, true)}</td>
 			</tr>
 			<tr>
 				<td class="label">Estimate Delivery Date:</td>
-				<td class="value">\${formatDate(jobCard.deliveryDate, false)}</td>
+				<td class="value">${formatDate(jobCard.deliveryDate, false)}</td>
 			</tr>
 		</table>
 
@@ -363,12 +361,12 @@ class JobCardController {
 					<circle cx="17" cy="17" r="2"/>
 				</svg>
 			</div>
-			Service: \${Array.isArray(jobCard.service) ? jobCard.service.join(', ') : (jobCard.service || '—')}
+			Service: ${Array.isArray(jobCard.service) ? jobCard.service.join(', ') : (jobCard.service || '—')}
 		</div>
 
 		<div class="note-section">
 			<div class="note-title">Note/Remark:</div>
-			<div class="note-content">\${jobCard.notes || '—'}</div>
+			<div class="note-content">${jobCard.notes || '—'}</div>
 		</div>
 
 		<div class="footer-ornament">
