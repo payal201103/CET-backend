@@ -18,6 +18,9 @@ router.post(
 	videoController.resolveRejectedVideoRequest
 );
 
+// Video Role Statistics Route
+router.get('/role-stats', videoController.getVideoRoleStats);
+
 // Pending/Completed Video Request Routes
 router.get('/pending', videoController.getVideoRequestsPending);
 router.get('/completed', videoController.getVideoRequestsCompleted);

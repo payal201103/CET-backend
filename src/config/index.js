@@ -20,17 +20,13 @@ const envSchema = Joi.object({
 	DB_USER: Joi.string().required(),
 	DB_PASSWORD: Joi.string().required(),
 	DB_PORT: Joi.number().required(),
-	DB_ENCRYPT: Joi.string()
-		.default('false')
-		.custom((val) => val === 'true'),
-	DB_TRUST_SERVER_CERTIFICATE: Joi.string()
-		.default('false')
-		.custom((val) => val === 'true'),
+	DB_ENCRYPT: Joi.boolean().default(false),
+	DB_TRUST_SERVER_CERTIFICATE: Joi.boolean().default(false),
 	DB_REQUEST_TIMEOUT: Joi.number().default(30000),
 	DB_POOL_MAX: Joi.number().default(10),
 	DB_POOL_MIN: Joi.number().default(0),
 	DB_POOL_IDLE_TIMEOUT: Joi.number().default(30000),
-	JWT_SECRET: Joi.string().required(),
+	JWT_SECRET: Joi.string().default('default-jwt-secret-key-for-dev'),
 	JWT_EXPIRES_IN: Joi.string().default('2d'),
 	PORT: Joi.number().default(5000),
 	NODE_ENV: Joi.string().default('development'),
@@ -38,11 +34,6 @@ const envSchema = Joi.object({
 	RATE_LIMIT_WINDOW_MS: Joi.number().default(300000),
 	RATE_LIMIT_AUTH_WINDOW_MS: Joi.number().default(900000),
 	RATE_LIMIT_HEALTH_WINDOW_MS: Joi.number().default(60000),
-	CTS_STUDENT_DATA_URL: Joi.string().required(),
-	CTS_TEACHER_DATA_URL: Joi.string().required(),
-	CTS_SCHOOL_LIST_URL: Joi.string().required(),
-	CTS_API_KEY: Joi.string().required(),
-	CHOICE_Filling: Joi.number().required(),
 }).unknown();
 
 const parseEnv = () => {
@@ -92,15 +83,6 @@ const config = {
 		windowMs: env.RATE_LIMIT_WINDOW_MS,
 		authWindowMs: env.RATE_LIMIT_AUTH_WINDOW_MS,
 		healthWindowMs: env.RATE_LIMIT_HEALTH_WINDOW_MS,
-	},
-	cts: {
-		studentData: env.CTS_STUDENT_DATA_URL,
-		teacherData: env.CTS_TEACHER_DATA_URL,
-		schoolList: env.CTS_SCHOOL_LIST_URL,
-		apiKey: env.CTS_API_KEY,
-	},
-	round: {
-		choiceFilling: env.CHOICE_Filling,
 	},
 };
 

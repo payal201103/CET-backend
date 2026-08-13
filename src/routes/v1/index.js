@@ -8,6 +8,8 @@ import carBrandRoute from './carBrand.route.js';
 import carModelRoute from './carModel.route.js';
 import jobCardRoute from './jobCard.route.js';
 import videoRoute from './video.route.js';
+import videoEditingRoute from './videoEditing.route.js';
+import videoPostingRoute from './videoPosting.route.js';
 
 const router = Router();
 
@@ -20,5 +22,7 @@ router.use('/car-brands', carBrandRoute);
 router.use('/car-models', carModelRoute);
 router.use('/job-cards', jobCardRoute);
 router.use('/video', videoRoute);
+router.use('/video-editing', videoEditingRoute);
+router.use('/video-posting', videoPostingRoute);
 
 export default router;

@@ -40,8 +40,7 @@ BEGIN
 
         UPDATE job_cards
         SET isCompleted = 1,
-            status = 'Completed',
-            updatedAt = SYSDATETIME()
+            status = 'Completed'
         WHERE id = @Id;
 
         SELECT

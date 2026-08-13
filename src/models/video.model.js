@@ -58,6 +58,19 @@ class VideoModel {
 			throw error;
 		}
 	}
+
+	async getVideoRoleStats() {
+		try {
+			const result = await executeStoredProcedure('sp_GetVideoRoleStats', [], true, 'recordsets');
+			return {
+				videographers: result[0] || [],
+				editors: result[1] || [],
+			};
+		} catch (error) {
+			logger.error('Error in getVideoRoleStats model', { error });
+			throw error;
+		}
+	}
 }
 
 export default VideoModel;

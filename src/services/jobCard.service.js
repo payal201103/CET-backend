@@ -54,6 +54,11 @@ class JobCardService {
 	async completeJobCard(id, userId, userRole) {
 		return await jobCardModel.completeJobCard(id, userId, userRole);
 	}
+
+	async getJobCardById(id, userId, userRole) {
+		const cards = await this.getAllJobCards(userId, userRole);
+		return cards.find((c) => c.id === Number(id));
+	}
 }
 
 export default JobCardService;
