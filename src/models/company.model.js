@@ -1,51 +1,40 @@
 import sql from 'mssql';
 import { executeStoredProcedure } from '../database/index.js';
-import logger from '../utils/logger.js';
 
-class CompanyModel {
+export const companyModel = {
 	async getAllCompanies(userId, userRole) {
-		try {
-			const params = [
-				{ name: 'UserId', type: sql.Int, value: Number(userId) },
-				{ name: 'UserRole', type: sql.VarChar(50), value: userRole },
-			];
-			return await executeStoredProcedure('sp_GetCompanies', params);
-		} catch (error) {
-			logger.error('Error in getAllCompanies model', { error });
-			throw error;
-		}
-	}
+		const params = [
+			{ name: 'UserId', type: sql.Int, value: Number(userId) },
+			{ name: 'UserRole', type: sql.VarChar(50), value: userRole },
+		];
+		return executeStoredProcedure('sp_GetCompanies', params);
+	},
 
 	async createCompany(companyData) {
-		try {
-			const params = [
-				{ name: 'CompanyName', type: sql.VarChar(150), value: companyData.companyName },
-				{ name: 'MobileNumber', type: sql.VarChar(15), value: companyData.mobileNumber },
-				{ name: 'Gstin', type: sql.VarChar(15), value: companyData.gstin || null },
-				{ name: 'Address', type: sql.VarChar(500), value: companyData.address || null },
-				{ name: 'CreatedBy', type: sql.Int, value: Number(companyData.createdBy) },
-			];
-			const result = await executeStoredProcedure('sp_CreateCompany', params);
-			return result[0];
-		} catch (error) {
-			logger.error('Error in createCompany model', { error });
-			throw error;
-		}
-	}
+		const params = [
+			{ name: 'CompanyName', type: sql.VarChar(150), value: companyData.companyName },
+			{ name: 'MobileNumber', type: sql.VarChar(15), value: companyData.mobileNumber },
+			{ name: 'Gstin', type: sql.VarChar(15), value: companyData.gstin || null },
+			{ name: 'Address', type: sql.VarChar(500), value: companyData.address || null },
+			{ name: 'CreatedBy', type: sql.Int, value: Number(companyData.createdBy) },
+		];
+		const result = await executeStoredProcedure('sp_CreateCompany', params);
+		return result[0];
+	},
 
 	async deleteCompany(id, userId, userRole) {
-		try {
-			const params = [
-				{ name: 'Id', type: sql.Int, value: Number(id) },
-				{ name: 'UserId', type: sql.Int, value: Number(userId) },
-				{ name: 'UserRole', type: sql.VarChar(50), value: userRole },
-			];
-			return await executeStoredProcedure('sp_DeleteCompany', params);
-		} catch (error) {
-			logger.error('Error in deleteCompany model', { error });
-			throw error;
-		}
-	}
+		const params = [
+			{ name: 'Id', type: sql.Int, value: Number(id) },
+			{ name: 'UserId', type: sql.Int, value: Number(userId) },
+			{ name: 'UserRole', type: sql.VarChar(50), value: userRole },
+		];
+		return executeStoredProcedure('sp_DeleteCompany', params);
+	},
+};
+
+export default class CompanyModel {
+	getAllCompanies(userId, userRole) { return companyModel.getAllCompanies(userId, userRole); }
+	createCompany(companyData) { return companyModel.createCompany(companyData); }
+	deleteCompany(id, userId, userRole) { return companyModel.deleteCompany(id, userId, userRole); }
 }
 
-export default CompanyModel;

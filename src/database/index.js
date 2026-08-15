@@ -27,67 +27,60 @@ export const initializeDatabase = async () => {
 	try {
 		pool = await new sql.ConnectionPool(DB_CONFIG).connect();
 		logger.info('Database connected successfully');
+		return pool;
 	} catch (error) {
-		logger.error('Database connection failed', {
-			error: error instanceof Error ? error.message : 'Unknown error',
-		});
+		logger.error('Database connection failed', { message: error.message });
 		throw error;
 	}
 };
 
 export const getConnection = () => {
-	if (!pool) throw new Error('Database not initialized. Call initializeDatabase() first.');
+	if (!pool) {
+		throw new Error('Database pool not initialized. Call initializeDatabase() first.');
+	}
 	return pool;
 };
 
-export const executeQuery = async (query, params) => {
-	try {
-		const connection = getConnection();
-		const request = connection.request();
+export const executeQuery = async (query, params = []) => {
+	const connection = getConnection();
+	const request = connection.request();
 
-		if (params) {
-			params.forEach((param) => {
-				request.input(param.name, param.type, param.value);
-			});
-		}
-
-		const result = await request.query(query);
-		return result.recordset;
-	} catch (error) {
-		logger.error('Query execution failed:', { error });
-		throw error;
+	if (params && params.length > 0) {
+		params.forEach((param) => {
+			request.input(param.name, param.type, param.value);
+		});
 	}
+
+	const result = await request.query(query);
+	return result.recordset;
 };
 
 export const executeStoredProcedure = async (
 	procedureName,
-	params,
+	params = [],
 	isMultipleResults = false,
 	resultType = 'recordset'
 ) => {
-	try {
-		const connection = getConnection();
-		const request = connection.request();
+	const connection = getConnection();
+	const request = connection.request();
 
-		if (params) {
-			params.forEach((param) => {
-				request.input(param.name, param.type, param.value);
-			});
-		}
-
-		if (resultType === 'output') request.output('result', sql.Int);
-
-		const result = await request.execute(procedureName);
-
-		return resultType === 'output'
-			? result.output.result
-			: isMultipleResults
-				? result?.[resultType]
-				: result.recordset;
-	} catch (error) {
-		logger.error('Stored procedure execution failed:', { error });
-		throw error;
+	if (params && params.length > 0) {
+		params.forEach((param) => {
+			request.input(param.name, param.type, param.value);
+		});
 	}
+
+	if (resultType === 'output') {
+		request.output('result', sql.Int);
+	}
+
+	const result = await request.execute(procedureName);
+
+	if (resultType === 'output') {
+		return result.output.result;
+	}
+
+	return isMultipleResults ? result?.[resultType] : result.recordset;
 };
 
 export const executeTransaction = async (callback) => {
@@ -119,14 +112,10 @@ export const isConnected = () => {
 
 export const healthCheck = async () => {
 	try {
-		if (!isConnected()) {
-			return false;
-		}
-
+		if (!isConnected()) return false;
 		await executeQuery('SELECT 1 as test');
 		return true;
-	} catch (error) {
-		logger.error('Database health check failed:', { error });
+	} catch {
 		return false;
 	}
 };
@@ -141,3 +130,4 @@ export default {
 	isConnected,
 	healthCheck,
 };
+

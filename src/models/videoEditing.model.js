@@ -1,39 +1,28 @@
 import sql from 'mssql';
 import { executeStoredProcedure } from '../database/index.js';
-import logger from '../utils/logger.js';
 
-class VideoEditingModel {
+export const videoEditingModel = {
 	async getVideoEditingPending() {
-		try {
-			return await executeStoredProcedure('sp_GetVideoEditingPending', []);
-		} catch (error) {
-			logger.error('Error in getVideoEditingPending model', { error });
-			throw error;
-		}
-	}
+		return executeStoredProcedure('sp_GetVideoEditingPending', []);
+	},
 
 	async getVideoEditingCompleted() {
-		try {
-			return await executeStoredProcedure('sp_GetVideoEditingCompleted', []);
-		} catch (error) {
-			logger.error('Error in getVideoEditingCompleted model', { error });
-			throw error;
-		}
-	}
+		return executeStoredProcedure('sp_GetVideoEditingCompleted', []);
+	},
 
 	async updateVideoEditingPending(id, isActive) {
-		try {
-			const params = [
-				{ name: 'Id', type: sql.Int, value: Number(id) },
-				{ name: 'IsActive', type: sql.Bit, value: isActive ? 1 : 0 },
-			];
-			const result = await executeStoredProcedure('sp_UpdateVideoEditingPending', params);
-			return result[0];
-		} catch (error) {
-			logger.error('Error in updateVideoEditingPending model', { error });
-			throw error;
-		}
-	}
+		const params = [
+			{ name: 'Id', type: sql.Int, value: Number(id) },
+			{ name: 'IsActive', type: sql.Bit, value: isActive ? 1 : 0 },
+		];
+		const result = await executeStoredProcedure('sp_UpdateVideoEditingPending', params);
+		return result[0];
+	},
+};
+
+export default class VideoEditingModel {
+	getVideoEditingPending() { return videoEditingModel.getVideoEditingPending(); }
+	getVideoEditingCompleted() { return videoEditingModel.getVideoEditingCompleted(); }
+	updateVideoEditingPending(id, isActive) { return videoEditingModel.updateVideoEditingPending(id, isActive); }
 }
 
-export default VideoEditingModel;
