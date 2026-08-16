@@ -9,3 +9,11 @@ export const createUser = {
 		role: Joi.string().required().max(50),
 	}),
 };
+
+export const resetPassword = {
+	body: Joi.object().keys({
+		userId: Joi.number().optional(),
+		targetUserId: Joi.number().optional(),
+		newPassword: Joi.string().required().min(4).max(255),
+	}),
+};

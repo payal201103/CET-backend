@@ -33,7 +33,7 @@ export const authRateLimiter = createLimiter({
 
 export const apiRateLimiter = createLimiter({
 	windowMs: config.rateLimit.windowMs,
-	limit: 50,
+	limit: config.server.nodeEnv === 'development' ? 50000 : 50,
 	code: 'API_RATE_LIMIT_EXCEEDED',
 	message: 'Too many API requests, please try again later.',
 });

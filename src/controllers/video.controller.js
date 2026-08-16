@@ -6,7 +6,10 @@ const videoService = new VideoService();
 class VideoController {
 	async getRejectedVideoRequests(req, res) {
 		try {
-			const requests = await videoService.getRejectedVideoRequests();
+			const userId = req.user?.userId;
+			const userRole = req.user?.roleName || '';
+			const branchId = req.branchId;
+			const requests = await videoService.getRejectedVideoRequests(userId, userRole, branchId);
 			return res.handler.success(requests, 'Rejected video requests fetched successfully');
 		} catch (error) {
 			logger.error('Error in getRejectedVideoRequests controller', { error });
@@ -37,7 +40,10 @@ class VideoController {
 
 	async getVideoRequestsPending(req, res) {
 		try {
-			const requests = await videoService.getVideoRequestsPending();
+			const userId = req.user?.userId;
+			const userRole = req.user?.roleName || '';
+			const branchId = req.branchId;
+			const requests = await videoService.getVideoRequestsPending(userId, userRole, branchId);
 			return res.handler.success(requests, 'Pending video requests fetched successfully');
 		} catch (error) {
 			logger.error('Error in getVideoRequestsPending controller', { error });
@@ -47,7 +53,10 @@ class VideoController {
 
 	async getVideoRequestsCompleted(req, res) {
 		try {
-			const requests = await videoService.getVideoRequestsCompleted();
+			const userId = req.user?.userId;
+			const userRole = req.user?.roleName || '';
+			const branchId = req.branchId;
+			const requests = await videoService.getVideoRequestsCompleted(userId, userRole, branchId);
 			return res.handler.success(requests, 'Completed video requests fetched successfully');
 		} catch (error) {
 			logger.error('Error in getVideoRequestsCompleted controller', { error });
@@ -74,7 +83,10 @@ class VideoController {
 
 	async getVideoRoleStats(req, res) {
 		try {
-			const stats = await videoService.getVideoRoleStats();
+			const userId = req.user?.userId;
+			const userRole = req.user?.roleName || '';
+			const branchId = req.branchId;
+			const stats = await videoService.getVideoRoleStats(userId, userRole, branchId);
 			return res.handler.success(stats, 'Video role statistics fetched successfully');
 		} catch (error) {
 			logger.error('Error in getVideoRoleStats controller', { error });

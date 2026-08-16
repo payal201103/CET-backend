@@ -2,12 +2,22 @@ import sql from 'mssql';
 import { executeStoredProcedure } from '../database/index.js';
 
 export const videoPostingModel = {
-	async getVideoPostingPending() {
-		return executeStoredProcedure('sp_GetVideoPostingPending', []);
+	async getVideoPostingPending(userId, userRole, branchId) {
+		const params = [
+			{ name: 'UserId', type: sql.Int, value: Number(userId) },
+			{ name: 'UserRole', type: sql.VarChar(50), value: userRole },
+			{ name: 'BranchId', type: sql.Int, value: branchId ? Number(branchId) : null },
+		];
+		return executeStoredProcedure('sp_GetVideoPostingPending', params);
 	},
 
-	async getVideoPostingCompleted() {
-		return executeStoredProcedure('sp_GetVideoPostingCompleted', []);
+	async getVideoPostingCompleted(userId, userRole, branchId) {
+		const params = [
+			{ name: 'UserId', type: sql.Int, value: Number(userId) },
+			{ name: 'UserRole', type: sql.VarChar(50), value: userRole },
+			{ name: 'BranchId', type: sql.Int, value: branchId ? Number(branchId) : null },
+		];
+		return executeStoredProcedure('sp_GetVideoPostingCompleted', params);
 	},
 
 	async updateVideoPostingPending(id, isActive) {
@@ -21,8 +31,8 @@ export const videoPostingModel = {
 };
 
 export default class VideoPostingModel {
-	getVideoPostingPending() { return videoPostingModel.getVideoPostingPending(); }
-	getVideoPostingCompleted() { return videoPostingModel.getVideoPostingCompleted(); }
+	getVideoPostingPending(userId, userRole, branchId) { return videoPostingModel.getVideoPostingPending(userId, userRole, branchId); }
+	getVideoPostingCompleted(userId, userRole, branchId) { return videoPostingModel.getVideoPostingCompleted(userId, userRole, branchId); }
 	updateVideoPostingPending(id, isActive) { return videoPostingModel.updateVideoPostingPending(id, isActive); }
 }
 

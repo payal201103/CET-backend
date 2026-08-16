@@ -3,8 +3,8 @@ import VideoPostingModel from '../models/videoPosting.model.js';
 const videoPostingModel = new VideoPostingModel();
 
 class VideoPostingService {
-	async getVideoPostingPending() {
-		const rows = await videoPostingModel.getVideoPostingPending();
+	async getVideoPostingPending(userId, userRole, branchId) {
+		const rows = await videoPostingModel.getVideoPostingPending(userId, userRole, branchId);
 		return rows.map((row) => ({
 			id: row.id,
 			jobCardId: row.jobCardNo,
@@ -18,8 +18,8 @@ class VideoPostingService {
 		}));
 	}
 
-	async getVideoPostingCompleted() {
-		const rows = await videoPostingModel.getVideoPostingCompleted();
+	async getVideoPostingCompleted(userId, userRole, branchId) {
+		const rows = await videoPostingModel.getVideoPostingCompleted(userId, userRole, branchId);
 		return rows.map((row) => ({
 			id: row.id,
 			jobCardId: row.jobCardNo,

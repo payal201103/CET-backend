@@ -11,4 +11,10 @@ const authController = new AuthController();
 router.post('/login', authRateLimiter, validateSchema(authValidation.login), authController.login);
 router.post('/logout', validateToken, authController.logout);
 
+router.post('/send-otp', authController.sendOtp);
+router.post('/forgot-password/send-otp', authController.sendOtp);
+
+router.post('/reset-password', authController.resetPasswordWithOtp);
+router.post('/forgot-password/reset', authController.resetPasswordWithOtp);
+
 export default router;

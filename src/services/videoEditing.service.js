@@ -3,8 +3,8 @@ import VideoEditingModel from '../models/videoEditing.model.js';
 const videoEditingModel = new VideoEditingModel();
 
 class VideoEditingService {
-	async getVideoEditingPending() {
-		const rows = await videoEditingModel.getVideoEditingPending();
+	async getVideoEditingPending(userId, userRole, branchId) {
+		const rows = await videoEditingModel.getVideoEditingPending(userId, userRole, branchId);
 		return rows.map((row) => ({
 			id: row.id,
 			jobCardId: row.jobCardNo,
@@ -19,8 +19,8 @@ class VideoEditingService {
 		}));
 	}
 
-	async getVideoEditingCompleted() {
-		const rows = await videoEditingModel.getVideoEditingCompleted();
+	async getVideoEditingCompleted(userId, userRole, branchId) {
+		const rows = await videoEditingModel.getVideoEditingCompleted(userId, userRole, branchId);
 		return rows.map((row) => ({
 			id: row.id,
 			jobCardId: row.jobCardNo,

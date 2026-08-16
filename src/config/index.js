@@ -7,13 +7,6 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
-console.log("DB_SERVER =", process.env.DB_SERVER);
-console.log("JWT_SECRET =", process.env.JWT_SECRET);
-console.log(
-  "Available env keys:",
-  Object.keys(process.env).filter(k => k.startsWith("DB_") || k.startsWith("JWT") || k.startsWith("CTS"))
-);
-
 const envSchema = Joi.object({
 	DB_SERVER: Joi.string().required(),
 	DB_NAME: Joi.string().required(),
@@ -43,7 +36,7 @@ const parseEnv = () => {
 	});
 
 	if (error) {
-		console.error('Environment variable validation erro:');
+		console.error('Environment variable validation error:');
 		error.details.forEach((err) => {
 			console.error(`- ${err.path.join('.')}: ${err.message}`);
 		});
@@ -87,3 +80,4 @@ const config = {
 };
 
 export default config;
+

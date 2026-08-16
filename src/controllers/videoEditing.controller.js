@@ -6,7 +6,10 @@ const videoEditingService = new VideoEditingService();
 class VideoEditingController {
 	async getVideoEditingPending(req, res) {
 		try {
-			const requests = await videoEditingService.getVideoEditingPending();
+			const userId = req.user?.userId;
+			const userRole = req.user?.roleName || '';
+			const branchId = req.branchId;
+			const requests = await videoEditingService.getVideoEditingPending(userId, userRole, branchId);
 			return res.handler.success(requests, 'Pending video editing requests fetched successfully');
 		} catch (error) {
 			logger.error('Error in getVideoEditingPending controller', { error });
@@ -16,7 +19,10 @@ class VideoEditingController {
 
 	async getVideoEditingCompleted(req, res) {
 		try {
-			const requests = await videoEditingService.getVideoEditingCompleted();
+			const userId = req.user?.userId;
+			const userRole = req.user?.roleName || '';
+			const branchId = req.branchId;
+			const requests = await videoEditingService.getVideoEditingCompleted(userId, userRole, branchId);
 			return res.handler.success(requests, 'Completed video editing requests fetched successfully');
 		} catch (error) {
 			logger.error('Error in getVideoEditingCompleted controller', { error });

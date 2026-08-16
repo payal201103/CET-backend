@@ -2,15 +2,16 @@ import sql from 'mssql';
 import { executeStoredProcedure, getConnection } from '../database/index.js';
 
 export const jobCardModel = {
-	async getAllJobCards(userId, userRole) {
+	async getAllJobCards(userId, userRole, branchId) {
 		const params = [
 			{ name: 'UserId', type: sql.Int, value: Number(userId) },
 			{ name: 'UserRole', type: sql.VarChar(50), value: userRole },
+			{ name: 'BranchId', type: sql.Int, value: branchId ? Number(branchId) : null },
 		];
 		return executeStoredProcedure('sp_GetJobCards', params);
 	},
 
-	async createJobCard(jobCardData, createdBy) {
+	async createJobCard(jobCardData, createdBy, branchId) {
 		const pool = getConnection();
 		const countResult = await pool.request().query('SELECT COUNT(*) as count FROM job_cards');
 		const count = countResult.recordset[0].count;
@@ -34,16 +35,18 @@ export const jobCardModel = {
 			{ name: 'SpecialNotes', type: sql.VarChar(sql.MAX), value: jobCardData.specialNotes || null },
 			{ name: 'Status', type: sql.VarChar(50), value: jobCardData.status || 'Pending' },
 			{ name: 'CreatedBy', type: sql.Int, value: Number(createdBy) },
+			{ name: 'BranchId', type: sql.Int, value: branchId ? Number(branchId) : null },
 		];
 
 		const result = await executeStoredProcedure('sp_CreateJobCard', params);
 		return {
 			id: result[0].id,
 			jobCardNo,
+			branchId: result[0].branchId || branchId,
 		};
 	},
 
-	async updateJobCard(id, jobCardData, userId, userRole) {
+	async updateJobCard(id, jobCardData, userId, userRole, branchId) {
 		const servicesStr = Array.isArray(jobCardData.services)
 			? jobCardData.services.join(',')
 			: jobCardData.services;
@@ -61,25 +64,28 @@ export const jobCardModel = {
 			{ name: 'Status', type: sql.VarChar(50), value: jobCardData.status || 'Pending' },
 			{ name: 'UserId', type: sql.Int, value: Number(userId) },
 			{ name: 'UserRole', type: sql.VarChar(50), value: userRole },
+			{ name: 'BranchId', type: sql.Int, value: branchId ? Number(branchId) : null },
 		];
 
 		return executeStoredProcedure('sp_UpdateJobCard', params);
 	},
 
-	async deleteJobCard(id, userId, userRole) {
+	async deleteJobCard(id, userId, userRole, branchId) {
 		const params = [
 			{ name: 'Id', type: sql.Int, value: Number(id) },
 			{ name: 'UserId', type: sql.Int, value: Number(userId) },
 			{ name: 'UserRole', type: sql.VarChar(50), value: userRole },
+			{ name: 'BranchId', type: sql.Int, value: branchId ? Number(branchId) : null },
 		];
 		return executeStoredProcedure('sp_DeleteJobCard', params);
 	},
 
-	async completeJobCard(id, userId, userRole) {
+	async completeJobCard(id, userId, userRole, branchId) {
 		const params = [
 			{ name: 'Id', type: sql.Int, value: Number(id) },
 			{ name: 'UserId', type: sql.Int, value: Number(userId) },
 			{ name: 'UserRole', type: sql.VarChar(50), value: userRole },
+			{ name: 'BranchId', type: sql.Int, value: branchId ? Number(branchId) : null },
 		];
 		const result = await executeStoredProcedure('sp_CompleteJobCard', params);
 		return result[0];
@@ -87,10 +93,10 @@ export const jobCardModel = {
 };
 
 export default class JobCardModel {
-	getAllJobCards(userId, userRole) { return jobCardModel.getAllJobCards(userId, userRole); }
-	createJobCard(jobCardData, createdBy) { return jobCardModel.createJobCard(jobCardData, createdBy); }
-	updateJobCard(id, jobCardData, userId, userRole) { return jobCardModel.updateJobCard(id, jobCardData, userId, userRole); }
-	deleteJobCard(id, userId, userRole) { return jobCardModel.deleteJobCard(id, userId, userRole); }
-	completeJobCard(id, userId, userRole) { return jobCardModel.completeJobCard(id, userId, userRole); }
+	getAllJobCards(userId, userRole, branchId) { return jobCardModel.getAllJobCards(userId, userRole, branchId); }
+	createJobCard(jobCardData, createdBy, branchId) { return jobCardModel.createJobCard(jobCardData, createdBy, branchId); }
+	updateJobCard(id, jobCardData, userId, userRole, branchId) { return jobCardModel.updateJobCard(id, jobCardData, userId, userRole, branchId); }
+	deleteJobCard(id, userId, userRole, branchId) { return jobCardModel.deleteJobCard(id, userId, userRole, branchId); }
+	completeJobCard(id, userId, userRole, branchId) { return jobCardModel.completeJobCard(id, userId, userRole, branchId); }
 }
 
