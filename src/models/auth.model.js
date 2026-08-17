@@ -14,12 +14,13 @@ export const authModel = {
 	},
 
 	async createSession(userId, token, ipAddress) {
+		const safeIp = (ipAddress || '').toString().slice(0, 100);
 		await executeQuery(
 			'INSERT INTO session_master (userId, token, ipAddress) VALUES (@userId, @token, @ipAddress)',
 			[
 				{ name: 'userId', type: sql.Int, value: Number(userId) },
 				{ name: 'token', type: sql.VarChar(512), value: token },
-				{ name: 'ipAddress', type: sql.VarChar(25), value: ipAddress },
+				{ name: 'ipAddress', type: sql.VarChar(100), value: safeIp },
 			]
 		);
 

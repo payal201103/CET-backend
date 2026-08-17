@@ -53,7 +53,7 @@ export const userModel = {
 };
 
 export default class UserModel {
-	getAllUsers(userRole, userId) { return userModel.getAllUsers(userRole, userId); }
+	getAllUsers(userRole, userId, branchId) { return userModel.getAllUsers(userRole, userId, branchId); }
 	getUserByUsername(username) { return userModel.getUserByUsername(username); }
 	createUser(userData) { return userModel.createUser(userData); }
 	deleteUser(userId) { return userModel.deleteUser(userId); }
