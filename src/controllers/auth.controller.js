@@ -9,7 +9,8 @@ const authService = new AuthService();
 class AuthController {
 	async login(req, res) {
 		try {
-			const { userName, passWord } = req.body;
+			const userName = req.body.userName || req.body.username;
+			const passWord = req.body.passWord || req.body.password;
 			const ipAddress = req.ip;
 
 			if (!userName || !passWord) {

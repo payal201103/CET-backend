@@ -15,6 +15,7 @@ import branchRoute from './branch.route.js';
 const router = Router();
 
 router.use('/auth', authRoute);
+router.use('/', authRoute);
 router.use('/health', healthRoute);
 router.use('/users', userRoute);
 router.use('/customers', customerRoute);
