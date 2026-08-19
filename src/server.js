@@ -20,13 +20,20 @@ const app = express();
 const port = config.server.port;
 const server = http.createServer(app);
 
+app.use((req, res, next) => {
+	if (req.url && req.url.includes('//')) {
+		req.url = req.url.replace(/\/+/g, '/');
+	}
+	next();
+});
+
 app.use(helmet({ crossOriginResourcePolicy: false }));
 app.use(
 	cors({
 		origin: true,
 		credentials: true,
 		methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-		allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'x-branch-id', 'Accept', 'Origin'],
+		allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'x-branch-id', 'X-Branch-Id', 'Accept', 'Origin'],
 	})
 );
 app.use(express.json({ limit: '5mb' }));
