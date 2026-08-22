@@ -1,6 +1,5 @@
 import axios from 'axios';
 import logger from './logger.js';
-import config from '../config/index.js';
 
 /**
  * Send real SMS to mobile numbers via Fast2SMS, Twilio, or Msg91

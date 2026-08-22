@@ -1,11 +1,6 @@
 import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
 import JobCardService from '../services/jobCard.service.js';
 import logger from '../utils/logger.js';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 const jobCardService = new JobCardService();
 
@@ -136,7 +131,7 @@ class JobCardController {
 						options.hour12 = true;
 					}
 					return date.toLocaleDateString('en-GB', options).replace(/,/g, '');
-				} catch (e) {
+				} catch {
 					return dateStr;
 				}
 			};			const htmlContent = `

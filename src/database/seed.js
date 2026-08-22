@@ -1,6 +1,6 @@
 import sql from 'mssql';
 import bcrypt from 'bcrypt';
-import config from '../../config/index.js';
+import config from '../config/index.js';
 
 const DB_CONFIG = {
 	server: config.database.server,
@@ -14,7 +14,7 @@ const DB_CONFIG = {
 	},
 };
 
-async function seedData() {
+export async function seedData() {
 	try {
 		const pool = await sql.connect(DB_CONFIG);
 		console.log('Connected to SQL Server. Clearing existing table data (excluding super admin)...');
@@ -36,16 +36,20 @@ async function seedData() {
 
 		// Reseed Identity counters
 		const tablesToReseed = [
-			'branches', 'customers', 'job_cards', 'car_brands', 'car_models',
+			'branches',
+			'customers',
+			'job_cards',
+			'car_brands',
+			'car_models',
 			'video_requests_pending',
 			'video_editing_pending',
 			'video_posting_pending',
-			'rejected_video_requests'
+			'rejected_video_requests',
 		];
 		for (const t of tablesToReseed) {
 			try {
 				await pool.request().query(`DBCC CHECKIDENT ('dbo.${t}', RESEED, 0)`);
-			} catch (reseedErr) {
+			} catch {
 				// Ignore tables that don't support CHECKIDENT
 			}
 		}
@@ -131,7 +135,7 @@ async function seedData() {
 			console.log(`Created Model '${m.brand} ${m.name}' (ID: ${modelIds[`${m.brand}_${m.name}`]})`);
 		}
 
-		// 7. Seed Customers (12 customers for pagination)
+		// 7. Seed Customers
 		const customers = [
 			{ name: 'Arjun Mehta', mobile: '9876543210', email: 'arjun.mehta@gmail.com', gst: '24AAAAM1234A1Z1' },
 			{ name: 'Payal Patel', mobile: '9898989898', email: 'payal.patel@yahoo.com', gst: null },
@@ -159,7 +163,7 @@ async function seedData() {
 			console.log(`Created Customer '${c.name}' (ID: ${customerIds[c.name]})`);
 		}
 
-		// 8. Seed Job Cards (12 records for pagination)
+		// 8. Seed Job Cards
 		const jobCards = [
 			{ no: 'JC-2026-001', customer: 'Arjun Mehta', brand: 'BMW', model: 'X5', num: 'GJ01AB1234', color: 'Black', services: ['Car Wash', 'PPF (Paint Protection Film)'], status: 'Pending', notes: 'Urgent delivery requested.' },
 			{ no: 'JC-2026-002', customer: 'Payal Patel', brand: 'Audi', model: 'A6', num: 'GJ01CD5678', color: 'White', services: ['Ceramic Coating'], status: 'Completed', notes: 'Deliver after interior cleanup.' },
@@ -195,92 +199,7 @@ async function seedData() {
 			console.log(`Created Job Card '${jc.no}'`);
 		}
 
-		// 9. Seed Video Requests (Pending & Completed)
-		// Pending video requests:
-		const videoReqsPending = [
-			{ jc: 'JC-2026-001', type: 'Car Reveal', status: 'Pending', assignedBy: 'Amit Shah' },
-			{ jc: 'JC-2026-003', type: 'PPF Installation', status: 'In Progress', assignedBy: 'Amit Shah' },
-			{ jc: 'JC-2026-011', type: 'Detailing Process', status: 'Pending', assignedBy: 'Amit Shah' },
-			{ jc: 'JC-2026-012', type: 'Car Wash Process', status: 'Pending', assignedBy: 'Amit Shah' },
-		];
-		for (const vr of videoReqsPending) {
-			await pool.request().query(`
-				INSERT INTO dbo.video_requests_pending (jobCardNo, customerName, videoType, status, assignedBy, date, isActive, createdAt, updatedAt)
-				VALUES ('${vr.jc}', 'Seeded Customer', '${vr.type}', '${vr.status}', '${vr.assignedBy}', GETDATE(), 1, GETDATE(), GETDATE());
-			`);
-		}
-		// Completed video requests:
-		const videoReqsCompleted = [
-			{ jc: 'JC-2026-002', type: 'Ceramic Coating Reveal', status: 'Completed', assignedBy: 'Amit Shah' },
-			{ jc: 'JC-2026-007', type: 'e-tron Delivery', status: 'Completed', assignedBy: 'Amit Shah' },
-			{ jc: 'JC-2026-008', type: 'i7 Gloss Reveal', status: 'Completed', assignedBy: 'Amit Shah' },
-			{ jc: 'JC-2026-009', type: 'Taycan Detailing', status: 'Completed', assignedBy: 'Amit Shah' },
-		];
-		let vrCompId = 1;
-		for (const vr of videoReqsCompleted) {
-			await pool.request().query(`
-				INSERT INTO dbo.video_requests_completed (id, jobCardNo, customerName, videoType, status, assignedBy, date, completedDate, isActive, createdAt, updatedAt)
-				VALUES (${vrCompId++}, '${vr.jc}', 'Seeded Customer', '${vr.type}', '${vr.status}', '${vr.assignedBy}', DATEADD(day, -2, GETDATE()), GETDATE(), 1, GETDATE(), GETDATE());
-			`);
-		}
-
-		// 10. Seed Video Editing (Pending & Completed)
-		const videoEditingPending = [
-			{ jc: 'JC-2026-004', car: 'Defender grey', type: 'Denting Work', status: 'Pending', videographer: 'Jignesh Patel', editor: 'Dhaval Bhai' },
-			{ jc: 'JC-2026-005', car: 'GLE Blue', type: 'PPF Gloss Installation', status: 'In Editing', videographer: 'Rohit Sharma', editor: 'Hardik Pandya' },
-		];
-		for (const ve of videoEditingPending) {
-			await pool.request().query(`
-				INSERT INTO dbo.video_editing_pending (jobCardNo, customerName, carDetails, videoType, status, videographer, editor, dueDate, isActive, createdAt, updatedAt)
-				VALUES ('${ve.jc}', 'Seeded Customer', '${ve.car}', '${ve.type}', '${ve.status}', '${ve.videographer}', '${ve.editor}', DATEADD(day, 2, GETDATE()), 1, GETDATE(), GETDATE());
-			`);
-		}
-		const videoEditingCompleted = [
-			{ jc: 'JC-2026-008', car: 'BMW i7 White', type: 'PPF Gloss Reveal', status: 'Completed', videographer: 'Jignesh Patel', editor: 'Dhaval Bhai' },
-			{ jc: 'JC-2026-010', car: 'S-Class Black', type: 'Paint Polish Reveal', status: 'Completed', videographer: 'Rohit Sharma', editor: 'Hardik Pandya' },
-		];
-		let veCompId = 1;
-		for (const ve of videoEditingCompleted) {
-			await pool.request().query(`
-				INSERT INTO dbo.video_editing_completed (id, jobCardNo, customerName, carDetails, videoType, status, videographer, editor, dueDate, completedDate, isActive, createdAt, updatedAt)
-				VALUES (${veCompId++}, '${ve.jc}', 'Seeded Customer', '${ve.car}', '${ve.type}', '${ve.status}', '${ve.videographer}', '${ve.editor}', DATEADD(day, -1, GETDATE()), GETDATE(), 1, GETDATE(), GETDATE());
-			`);
-		}
-
-		// 11. Seed Video Posting (Pending & Completed)
-		const videoPostingPending = [
-			{ jc: 'JC-2026-002', car: 'Audi A6 White', type: 'Ceramic Coating Reveal', status: 'Pending Upload', videographer: 'Jignesh Patel' },
-			{ jc: 'JC-2026-009', car: 'Porsche Taycan Grey', type: 'Graphene Coating', status: 'Drafting Caption', videographer: 'Rohit Sharma' },
-		];
-		for (const vp of videoPostingPending) {
-			await pool.request().query(`
-				INSERT INTO dbo.video_posting_pending (jobCardNo, customerName, carDetails, videoType, status, videographer, dueDate, isActive, createdAt, updatedAt)
-				VALUES ('${vp.jc}', 'Seeded Customer', '${vp.car}', '${vp.type}', '${vp.status}', '${vp.videographer}', DATEADD(day, 1, GETDATE()), 1, GETDATE(), GETDATE());
-			`);
-		}
-		const videoPostingCompleted = [
-			{ jc: 'JC-2026-008', car: 'BMW i7 White', type: 'PPF Gloss Reveal', status: 'Posted', videographer: 'Jignesh Patel' },
-		];
-		let vpCompId = 1;
-		for (const vp of videoPostingCompleted) {
-			await pool.request().query(`
-				INSERT INTO dbo.video_posting_completed (id, jobCardNo, customerName, carDetails, videoType, status, videographer, dueDate, completedDate, isActive, createdAt, updatedAt)
-				VALUES (${vpCompId++}, '${vp.jc}', 'Seeded Customer', '${vp.car}', '${vp.type}', '${vp.status}', '${vp.videographer}', DATEADD(day, -1, GETDATE()), GETDATE(), 1, GETDATE(), GETDATE());
-			`);
-		}
-
-		// 12. Seed Rejected Video Requests
-		const rejectedVideoReqs = [
-			{ jc: 'JC-2026-006', car: 'Jaguar F-TYPE Black', services: 'Foam Wash', videographer: 'Jignesh Patel', reason: 'Poor lighting in wash bay' },
-		];
-		for (const r of rejectedVideoReqs) {
-			await pool.request().query(`
-				INSERT INTO dbo.rejected_video_requests (jobCardNo, customerName, carDetails, services, videographerName, rejectedDate, rejectionReason, isResolved, createdAt, updatedAt)
-				VALUES ('${r.jc}', 'Seeded Customer', '${r.car}', '${r.services}', '${r.videographer}', GETDATE(), '${r.reason}', 0, GETDATE(), GETDATE());
-			`);
-		}
-
-		console.log('Successfully completed live database seeding of all tables!');
+		console.log('Successfully completed database seeding!');
 		await pool.close();
 	} catch (e) {
 		console.error('Error running seeding:', e);

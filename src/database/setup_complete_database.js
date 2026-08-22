@@ -2,7 +2,6 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import sql from 'mssql';
-import bcrypt from 'bcrypt';
 import config from '../config/index.js';
 
 const __filename = fileURLToPath(import.meta.url);
