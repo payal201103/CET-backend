@@ -9,12 +9,6 @@ import { errorHandler } from './utils/errorHandler.js';
 import routes from './routes/v1/index.js';
 import healthRoute from './routes/v1/health.route.js';
 import { initializeDatabase, closeDatabase } from './database/index.js';
-import {
-	generalRateLimiter,
-	apiRateLimiter,
-	healthRateLimiter,
-	developmentRateLimiter,
-} from './middlewares/rateLimit.middlewares.js';
 
 const app = express();
 const port = config.server.port;
@@ -45,14 +39,12 @@ app.use((req, res, next) => {
 	next();
 });
 
-app.use(config.server.nodeEnv === 'development' ? developmentRateLimiter : generalRateLimiter);
+app.use('/api/ping', healthRoute);
+app.use('/ping', healthRoute);
 
-app.use('/api/ping', healthRateLimiter, healthRoute);
-app.use('/ping', healthRateLimiter, healthRoute);
-
-app.use('/api/v1', apiRateLimiter, routes);
-app.use('/api', apiRateLimiter, routes);
-app.use('/', apiRateLimiter, routes);
+app.use('/api/v1', routes);
+app.use('/api', routes);
+app.use('/', routes);
 
 app.use(errorHandler);
 
