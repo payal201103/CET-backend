@@ -15,25 +15,25 @@ BEGIN
     SET NOCOUNT ON;
 
     BEGIN TRY
-        IF @UserRole = 'Super Admin'
+        IF @UserRole = 'Super Admin' OR @UserRole = 'Admin'
         BEGIN
             UPDATE customers
-            SET customerName = @CustomerName,
-                mobileNumber = @MobileNumber,
-                emailId = @EmailId,
+            SET name = @CustomerName,
+                mobile = @MobileNumber,
+                email = @EmailId,
                 gstNumber = @GstNumber
-            WHERE customerID = @Id;
+            WHERE id = @Id;
 
             SELECT @@ROWCOUNT AS rowsUpdated;
         END
         ELSE
         BEGIN
             UPDATE customers
-            SET customerName = @CustomerName,
-                mobileNumber = @MobileNumber,
-                emailId = @EmailId,
+            SET name = @CustomerName,
+                mobile = @MobileNumber,
+                email = @EmailId,
                 gstNumber = @GstNumber
-            WHERE customerID = @Id
+            WHERE id = @Id
               AND createdBy = @UserId;
 
             SELECT @@ROWCOUNT AS rowsUpdated;

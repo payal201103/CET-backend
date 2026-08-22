@@ -3,8 +3,8 @@ import VideoModel from '../models/video.model.js';
 const videoModel = new VideoModel();
 
 class VideoService {
-	async getRejectedVideoRequests() {
-		const rows = await videoModel.getRejectedVideoRequests();
+	async getRejectedVideoRequests(userId, userRole, branchId) {
+		const rows = await videoModel.getRejectedVideoRequests(userId, userRole, branchId);
 		return rows.map((row) => ({
 			id: row.id,
 			jobCardNo: row.jobCardNo,
@@ -32,8 +32,8 @@ class VideoService {
 		};
 	}
 
-	async getVideoRequestsPending() {
-		const rows = await videoModel.getVideoRequestsPending();
+	async getVideoRequestsPending(userId, userRole, branchId) {
+		const rows = await videoModel.getVideoRequestsPending(userId, userRole, branchId);
 		return rows.map((row) => ({
 			id: row.id,
 			jobCardId: row.jobCardNo,
@@ -46,8 +46,8 @@ class VideoService {
 		}));
 	}
 
-	async getVideoRequestsCompleted() {
-		const rows = await videoModel.getVideoRequestsCompleted();
+	async getVideoRequestsCompleted(userId, userRole, branchId) {
+		const rows = await videoModel.getVideoRequestsCompleted(userId, userRole, branchId);
 		return rows.map((row) => ({
 			id: row.id,
 			jobCardId: row.jobCardNo,
@@ -76,8 +76,8 @@ class VideoService {
 		};
 	}
 
-	async getVideoRoleStats() {
-		return await videoModel.getVideoRoleStats();
+	async getVideoRoleStats(userId, userRole, branchId) {
+		return await videoModel.getVideoRoleStats(userId, userRole, branchId);
 	}
 }
 

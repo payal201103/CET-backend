@@ -10,10 +10,12 @@ import jobCardRoute from './jobCard.route.js';
 import videoRoute from './video.route.js';
 import videoEditingRoute from './videoEditing.route.js';
 import videoPostingRoute from './videoPosting.route.js';
+import branchRoute from './branch.route.js';
 
 const router = Router();
 
 router.use('/auth', authRoute);
+router.use('/', authRoute);
 router.use('/health', healthRoute);
 router.use('/users', userRoute);
 router.use('/customers', customerRoute);
@@ -24,5 +26,6 @@ router.use('/job-cards', jobCardRoute);
 router.use('/video', videoRoute);
 router.use('/video-editing', videoEditingRoute);
 router.use('/video-posting', videoPostingRoute);
+router.use('/branches', branchRoute);
 
 export default router;

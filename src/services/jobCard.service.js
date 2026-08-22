@@ -3,8 +3,8 @@ import JobCardModel from '../models/jobCard.model.js';
 const jobCardModel = new JobCardModel();
 
 class JobCardService {
-	async getAllJobCards(userId, userRole) {
-		const rows = await jobCardModel.getAllJobCards(userId, userRole);
+	async getAllJobCards(userId, userRole, branchId) {
+		const rows = await jobCardModel.getAllJobCards(userId, userRole, branchId);
 		return rows.map((row) => ({
 			id: row.id,
 			jobCardNo: row.jobCardNo,
@@ -27,36 +27,38 @@ class JobCardService {
 			notes: row.notes || '',
 			date: row.createdAt ? new Date(row.createdAt).toISOString().slice(0, 10) : '',
 			createdBy: row.createdBy,
+			branchId: row.branchId,
 		}));
 	}
 
-	async createJobCard(jobCardData, createdBy) {
-		const result = await jobCardModel.createJobCard(jobCardData, createdBy);
+	async createJobCard(jobCardData, createdBy, branchId) {
+		const result = await jobCardModel.createJobCard(jobCardData, createdBy, branchId);
 		return {
 			id: result.id,
 			jobCardNo: result.jobCardNo,
+			branchId: result.branchId,
 			...jobCardData,
 		};
 	}
 
-	async updateJobCard(id, jobCardData, userId, userRole) {
-		await jobCardModel.updateJobCard(id, jobCardData, userId, userRole);
+	async updateJobCard(id, jobCardData, userId, userRole, branchId) {
+		await jobCardModel.updateJobCard(id, jobCardData, userId, userRole, branchId);
 		return {
 			id,
 			...jobCardData,
 		};
 	}
 
-	async deleteJobCard(id, userId, userRole) {
-		return await jobCardModel.deleteJobCard(id, userId, userRole);
+	async deleteJobCard(id, userId, userRole, branchId) {
+		return await jobCardModel.deleteJobCard(id, userId, userRole, branchId);
 	}
 
-	async completeJobCard(id, userId, userRole) {
-		return await jobCardModel.completeJobCard(id, userId, userRole);
+	async completeJobCard(id, userId, userRole, branchId) {
+		return await jobCardModel.completeJobCard(id, userId, userRole, branchId);
 	}
 
-	async getJobCardById(id, userId, userRole) {
-		const cards = await this.getAllJobCards(userId, userRole);
+	async getJobCardById(id, userId, userRole, branchId) {
+		const cards = await this.getAllJobCards(userId, userRole, branchId);
 		return cards.find((c) => c.id === Number(id));
 	}
 }

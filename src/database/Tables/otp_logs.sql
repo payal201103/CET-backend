@@ -1,9 +1,0 @@
-CREATE TABLE otp_logs
-(
-    id INT IDENTITY(1,1) PRIMARY KEY,
-    entityId BIGINT NOT NULL,
-    parentMo VARCHAR(10) NULL,
-    otpCode VARCHAR(10) NOT NULL,
-    createdAt DATETIME2(3) DEFAULT SYSDATETIME(),
-    ipAddress VARCHAR(25) NULL
-);

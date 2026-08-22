@@ -26,8 +26,16 @@ const validateToken = async (req, res, next) => {
 			roleName: result.roleName,
 			Firstname: result.Firstname,
 			Lastname: result.Lastname,
+			branchId: result.branchId,
 			token,
 		};
+
+		const roleNorm = (result.roleName || '').trim().toLowerCase();
+		if (roleNorm === 'super admin' || roleNorm === 'superadmin') {
+			req.branchId = req.headers['x-branch-id'] ? Number(req.headers['x-branch-id']) : null;
+		} else {
+			req.branchId = result.branchId ? Number(result.branchId) : null;
+		}
 
 		next();
 	} catch (error) {

@@ -1,39 +1,38 @@
 import sql from 'mssql';
 import { executeStoredProcedure } from '../database/index.js';
-import logger from '../utils/logger.js';
 
-class VideoEditingModel {
-	async getVideoEditingPending() {
-		try {
-			return await executeStoredProcedure('sp_GetVideoEditingPending', []);
-		} catch (error) {
-			logger.error('Error in getVideoEditingPending model', { error });
-			throw error;
-		}
-	}
+export const videoEditingModel = {
+	async getVideoEditingPending(userId, userRole, branchId) {
+		const params = [
+			{ name: 'UserId', type: sql.Int, value: Number(userId) },
+			{ name: 'UserRole', type: sql.VarChar(50), value: userRole },
+			{ name: 'BranchId', type: sql.Int, value: branchId ? Number(branchId) : null },
+		];
+		return executeStoredProcedure('sp_GetVideoEditingPending', params);
+	},
 
-	async getVideoEditingCompleted() {
-		try {
-			return await executeStoredProcedure('sp_GetVideoEditingCompleted', []);
-		} catch (error) {
-			logger.error('Error in getVideoEditingCompleted model', { error });
-			throw error;
-		}
-	}
+	async getVideoEditingCompleted(userId, userRole, branchId) {
+		const params = [
+			{ name: 'UserId', type: sql.Int, value: Number(userId) },
+			{ name: 'UserRole', type: sql.VarChar(50), value: userRole },
+			{ name: 'BranchId', type: sql.Int, value: branchId ? Number(branchId) : null },
+		];
+		return executeStoredProcedure('sp_GetVideoEditingCompleted', params);
+	},
 
 	async updateVideoEditingPending(id, isActive) {
-		try {
-			const params = [
-				{ name: 'Id', type: sql.Int, value: Number(id) },
-				{ name: 'IsActive', type: sql.Bit, value: isActive ? 1 : 0 },
-			];
-			const result = await executeStoredProcedure('sp_UpdateVideoEditingPending', params);
-			return result[0];
-		} catch (error) {
-			logger.error('Error in updateVideoEditingPending model', { error });
-			throw error;
-		}
-	}
+		const params = [
+			{ name: 'Id', type: sql.Int, value: Number(id) },
+			{ name: 'IsActive', type: sql.Bit, value: isActive ? 1 : 0 },
+		];
+		const result = await executeStoredProcedure('sp_UpdateVideoEditingPending', params);
+		return result[0];
+	},
+};
+
+export default class VideoEditingModel {
+	getVideoEditingPending(userId, userRole, branchId) { return videoEditingModel.getVideoEditingPending(userId, userRole, branchId); }
+	getVideoEditingCompleted(userId, userRole, branchId) { return videoEditingModel.getVideoEditingCompleted(userId, userRole, branchId); }
+	updateVideoEditingPending(id, isActive) { return videoEditingModel.updateVideoEditingPending(id, isActive); }
 }
 
-export default VideoEditingModel;

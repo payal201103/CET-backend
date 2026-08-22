@@ -13,6 +13,7 @@ export const createError = (message, statusCode = 500, code) => {
 	return new CustomError(message, statusCode, code);
 };
 
+// eslint-disable-next-line no-unused-vars
 export const errorHandler = (error, req, res, _next) => {
 	const statusCode = error.statusCode || 500;
 	const message = error.message || 'Internal Server Error';

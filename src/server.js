@@ -9,19 +9,27 @@ import { errorHandler } from './utils/errorHandler.js';
 import routes from './routes/v1/index.js';
 import healthRoute from './routes/v1/health.route.js';
 import { initializeDatabase, closeDatabase } from './database/index.js';
-import {
-	generalRateLimiter,
-	apiRateLimiter,
-	healthRateLimiter,
-	developmentRateLimiter,
-} from './middlewares/rateLimit.middlewares.js';
 
 const app = express();
 const port = config.server.port;
 const server = http.createServer(app);
 
-app.use(helmet());
-app.use(cors({ origin: config.server.corsOrigin }));
+app.use((req, res, next) => {
+	if (req.url && req.url.includes('//')) {
+		req.url = req.url.replace(/\/+/g, '/');
+	}
+	next();
+});
+
+app.use(helmet({ crossOriginResourcePolicy: false }));
+app.use(
+	cors({
+		origin: true,
+		credentials: true,
+		methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+		allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'x-branch-id', 'X-Branch-Id', 'Accept', 'Origin'],
+	})
+);
 app.use(express.json({ limit: '5mb' }));
 app.use(express.urlencoded({ extended: false }));
 app.use(logger.logRequest.bind(logger));
@@ -31,10 +39,12 @@ app.use((req, res, next) => {
 	next();
 });
 
-app.use(config.server.nodeEnv === 'development' ? developmentRateLimiter : generalRateLimiter);
+app.use('/api/ping', healthRoute);
+app.use('/ping', healthRoute);
 
-app.use('/api/ping', healthRateLimiter, healthRoute);
-app.use('/api/v1', apiRateLimiter, routes);
+app.use('/api/v1', routes);
+app.use('/api', routes);
+app.use('/', routes);
 
 app.use(errorHandler);
 

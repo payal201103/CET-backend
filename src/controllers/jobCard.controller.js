@@ -1,11 +1,6 @@
 import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
 import JobCardService from '../services/jobCard.service.js';
 import logger from '../utils/logger.js';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 const jobCardService = new JobCardService();
 
@@ -14,7 +9,8 @@ class JobCardController {
 		try {
 			const userId = req.user?.userId;
 			const userRole = req.user?.roleName || '';
-			const jobCards = await jobCardService.getAllJobCards(userId, userRole);
+			const branchId = req.branchId;
+			const jobCards = await jobCardService.getAllJobCards(userId, userRole, branchId);
 			return res.handler.success(jobCards, 'Job cards fetched successfully');
 		} catch (error) {
 			logger.error('Error in getAllJobCards controller', { error });
@@ -25,7 +21,8 @@ class JobCardController {
 	async createJobCard(req, res) {
 		try {
 			const createdBy = req.user?.userId;
-			const newJobCard = await jobCardService.createJobCard(req.body, createdBy);
+			const branchId = req.branchId;
+			const newJobCard = await jobCardService.createJobCard(req.body, createdBy, branchId);
 			return res.handler.success(newJobCard, 'Job card created successfully');
 		} catch (error) {
 			logger.error('Error in createJobCard controller', { error });
@@ -38,12 +35,13 @@ class JobCardController {
 			const { id } = req.params;
 			const userId = req.user?.userId;
 			const userRole = req.user?.roleName || '';
+			const branchId = req.branchId;
 
 			if (!id) {
 				return res.handler.badRequest({}, 'Job Card ID is required');
 			}
 
-			const updatedJobCard = await jobCardService.updateJobCard(id, req.body, userId, userRole);
+			const updatedJobCard = await jobCardService.updateJobCard(id, req.body, userId, userRole, branchId);
 			return res.handler.success(updatedJobCard, 'Job card updated successfully');
 		} catch (error) {
 			logger.error('Error in updateJobCard controller', { error });
@@ -56,12 +54,13 @@ class JobCardController {
 			const { id } = req.params;
 			const userId = req.user?.userId;
 			const userRole = req.user?.roleName || '';
+			const branchId = req.branchId;
 
 			if (!id) {
 				return res.handler.badRequest({}, 'Job Card ID is required');
 			}
 
-			await jobCardService.deleteJobCard(id, userId, userRole);
+			await jobCardService.deleteJobCard(id, userId, userRole, branchId);
 			return res.handler.success({}, 'Job card deleted successfully');
 		} catch (error) {
 			logger.error('Error in deleteJobCard controller', { error });
@@ -74,12 +73,13 @@ class JobCardController {
 			const { id } = req.params;
 			const userId = req.user?.userId;
 			const userRole = req.user?.roleName || '';
+			const branchId = req.branchId;
 
 			if (!id) {
 				return res.handler.badRequest({}, 'Job Card ID is required');
 			}
 
-			const result = await jobCardService.completeJobCard(id, userId, userRole);
+			const result = await jobCardService.completeJobCard(id, userId, userRole, branchId);
 			return res.handler.success(result, 'Job card marked as completed');
 		} catch (error) {
 			logger.error('Error in completeJobCard controller', { error });
@@ -97,7 +97,8 @@ class JobCardController {
 				return res.status(400).send('Job Card ID is required');
 			}
 
-			const jobCard = await jobCardService.getJobCardById(id, userId, userRole);
+			const branchId = req.branchId;
+			const jobCard = await jobCardService.getJobCardById(id, userId, userRole, branchId);
 			if (!jobCard) {
 				return res.status(404).send('Job card not found');
 			}
@@ -130,7 +131,7 @@ class JobCardController {
 						options.hour12 = true;
 					}
 					return date.toLocaleDateString('en-GB', options).replace(/,/g, '');
-				} catch (e) {
+				} catch {
 					return dateStr;
 				}
 			};			const htmlContent = `

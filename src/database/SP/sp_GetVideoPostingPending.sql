@@ -1,21 +1,43 @@
 CREATE OR ALTER PROCEDURE [dbo].[sp_GetVideoPostingPending]
+(
+    @UserId INT,
+    @UserRole VARCHAR(50),
+    @BranchId INT = NULL
+)
 AS
 BEGIN
     SET NOCOUNT ON;
     BEGIN TRY
+        DECLARE @UserBranchId INT;
+        DECLARE @UserActualRole VARCHAR(50);
+
+        SELECT @UserBranchId = branchId, @UserActualRole = role FROM dbo.users WHERE userID = @UserId;
+
+        DECLARE @EffectiveBranchId INT;
+        IF @UserActualRole = 'Super Admin'
+        BEGIN
+            SET @EffectiveBranchId = @BranchId;
+        END
+        ELSE
+        BEGIN
+            SET @EffectiveBranchId = @UserBranchId;
+        END
+
         SELECT 
-            id,
-            jobCardNo,
-            customerName,
-            carDetails,
-            videoType,
-            status,
-            videographer,
-            FORMAT(dueDate, 'yyyy-MM-dd') AS dueDate,
-            isActive
-        FROM dbo.video_posting_pending
-        WHERE isActive = 1
-        ORDER BY dueDate ASC;
+            p.id,
+            p.jobCardNo,
+            p.customerName,
+            p.carDetails,
+            p.videoType,
+            p.status,
+            p.videographer,
+            FORMAT(p.dueDate, 'yyyy-MM-dd') AS dueDate,
+            p.isActive
+        FROM dbo.video_posting_pending p
+        INNER JOIN dbo.job_cards jc ON p.jobCardNo = jc.jobCardNo
+        WHERE p.isActive = 1
+          AND (@EffectiveBranchId IS NULL OR jc.branchId = @EffectiveBranchId)
+        ORDER BY p.dueDate ASC;
     END TRY
     BEGIN CATCH
         THROW;
